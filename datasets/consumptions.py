@@ -16,6 +16,10 @@ class PowerConsumptions(object):
 
     DEFAULT_ENCODING = 'UTF-8'
 
+    population = {'Country':['AT', 'BE', 'CH', 'CY', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'HR', 'HU', 'IE', 'IT', 'PT'],
+                  'Population': [8527230, 11215442, 8183800, 85800, 80767000, 5639719, 46507760, 5468609, 66048000,
+                                 64105654, 10992589, 4267558, 9879000, 4609600, 60780377, 10477800]}
+
     def __init__(self, dir_path, pattern, skiprows=9, maxcolumns=26, hourchange='3B:00:00'):
         if os.path.isfile(os.path.join(dir_path, 'hconsum')):
             self.df = pd.load(os.path.join(dir_path, 'hconsum'))
@@ -52,13 +56,10 @@ class PowerConsumptions(object):
             months = []
             years = []
             for index, row in wb.iterrows():
-                try:
-                    date = datetime.datetime.strptime(row['Day'], '%Y-%m-%d')
-                except:
-                    print 'ei'
-                weekdays.append(date.weekday())
-                months.append(date.month)
-                years.append(date.year)
+                date = datetime.datetime.strptime(row['Day'], '%Y-%m-%d')
+                weekdays.append(str(date.weekday()))
+                months.append(str(date.month))
+                years.append(str(date.year))
 
             wb['weekday'] = pd.Series(weekdays)
             wb['month'] = pd.Series(months)
@@ -66,5 +67,6 @@ class PowerConsumptions(object):
 
             # Append to the self.df data frame
             self.df = pd.concat([self.df, wb])
+
 
         self.df.save(os.path.join(dir_path, 'hconsum'))
